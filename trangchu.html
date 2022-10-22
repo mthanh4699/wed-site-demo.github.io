@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="trangchu.css">
+    <title>Trang Chủ</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="./img/IViettech.png" alt="">
+            </div>
+            <div class="header_user">
+                <h3>User</h3>
+                <img id="section" src="./img/avatar.png" alt="">
+                <ul class="hide">
+                    <li><a href="">Tra cứu thông tin</a></li>
+                    <li><a href="./trangquanlythongtin.html">Quản lý thông tin Customer</a></li>
+                    <li><a href="./trangdangnhapdangky.html">Đăng xuất</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="contact">
+            <h3><a href="">Chào Mừng Đến Với</a></h2>
+            <h1><a href="">HỆ THỐNG QUẢN LÝ THÔNG TIN NGƯỜI DÙNG</a></h1>
+        </div>
+        <div class="footer">
+            
+        </div>
+    </div>
+</body>
+<script>
+   
+    //viết sự kiện click vào icon hiển thị lên menu:
+    document.getElementById("section").onclick = function () {
+        if (!this.nextElementSibling.hasAttribute('class')) {
+            this.nextElementSibling.setAttribute('class', 'hide');
+        } else {
+             //thì hiển thị thông tin chi tiết tương ứng lên : Done
+            this.nextElementSibling.removeAttribute('class');
+        }
+    }
+</script>
+</html>

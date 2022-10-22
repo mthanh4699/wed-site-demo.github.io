@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./trangquanlythongtin.css">
+    <title>Trang quản lý thông tin</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header_form">
+                <h3>Calculate monthly eletricity bill for Customer</h3>
+                <div class="row_item">
+                    <label for="">Name:</label>
+                    <input id="name" type="text">
+                </div>
+                <div class="row_item">
+                    <label for="">Address:</label>
+                    <input id="address" type="text">
+                </div>
+                <div class="row_item">
+                    <label for="">Start-up period:</label>
+                    <input id="start" type="number">
+                    <span id="erro1"></span>
+                </div>
+                <div class="row_item">
+                    <label for="">End-of-item digits: </label>
+                    <input id="end" type="number">
+                    <span id="erro2"></span>
+                </div>
+                <div class="row_item">
+                    <label for="">The VAT tax: </label>
+                    <input id="vat" type="number"    min="0">
+                    <span id="erro3"></span>
+                </div>
+                <div class="row_item">
+                    <input id="index" type="hidden">
+                </div>
+                <div class="row_item">
+                    <button type="button" id="btnCalculate">Calculate</button>
+                    <button type="button" id="btnClear">Clear</button>
+                    <button type="button" id="btnUpdate" style="display: none;" onclick="loadUpdate()">Update</button>
+                    <button type="button" id="btnCancel" style="display: none;" onclick="Cancel()">Cancel</button>
+                </div>
+                <label for="">Hiển thị</label>
+                <select name="" id="">
+                    <option value="" id="numSel"></option>
+                </select>
+                    
+                </select>
+                <table id="tblData">
+                    <thead>
+                        <tr class="bg">
+                            <th colspan="8">Thông tin Calculate:</th>
+                        </tr>
+                        <tr>
+                            <th>STT</th>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Start-up period</th>
+                            <th>End-of-item digits</th>
+                            <th>The VAT tax</th>
+                            <th>Thành tiền</th>
+                            <th>Edit/Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="header_user">
+                <h3>User</h3>
+                <img id="section" src="./img/avatar.png" alt="">
+                <ul class="hide">
+                    <li><a href="./trangchu.html">Trang chủ</a></li>
+                    <li><a href="">Tra cứu thông tin</a></li>
+                    <li><a href="./trangquanlythongtin.html">Quản lý thông tin Customer</a></li>
+                    <li><a href="./trangdangnhapdangky.html">Đăng xuất</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer">
+            
+        </div>
+    </div>
+</body>
+<script>
+     //viết sự kiện click vào icon hiển thị lên menu:
+     document.getElementById("section").onclick = function () {
+        if (!this.nextElementSibling.hasAttribute('class')) {
+            this.nextElementSibling.setAttribute('class', 'hide');
+        } else {
+             //thì hiển thị thông tin chi tiết tương ứng lên : Done
+            this.nextElementSibling.removeAttribute('class');
+        }
+    }
+
+    //event:
+    var arrCal = [];
+    window.onload = function () {
+        arrCal = localStorage.getItem("ObjCal") ? JSON.parse(localStorage.getItem("ObjCal")) : [];
+        listTable();
+    }
+
+    function genderEvent(typeEvent, element, callback) {
+        document.querySelector(element).addEventListener(typeEvent, function (event) {
+            if (typeof callback == "function") {
+                callback(event);
+            }
+        })
+    }
+
+    function listTable() {
+        var html = '';
+        document.querySelector('#tblData tbody').innerHTML = '';
+        arrCal.forEach(function (data, index) {
+            data.index = index;
+            html += `<tr>
+                        <td>${data.index+1}</td>
+                        <td>${data.name}</td>
+                        <td>${data.address}</td>
+                        <td>${data.start}</td>
+                        <td>${data.end}</td>
+                        <td>${data.vat}</td>
+                        <td>${data.total}</td>
+                        
+                        <td>
+                            <button onclick='editElement(${index})'>Edit</button>
+                            <button onclick='deleteElement(${index})'>Delete</button>
+                        </td>
+                    </tr>`;
+        });
+        document.querySelector('#tblData tbody').innerHTML += html;
+        document.getElementById("numSel").innerHTML = arrCal.length
+    }
+
+
+    //kiểm tra thông tinh nhập vào của người dùng:
+    
+
+    genderEvent("click", "#btnCalculate", function() {
+        //lấy thông tin người dùng đã nhập và push vào mảng:
+        var name = document.getElementById("name").value;
+        var address = document.getElementById("address").value;
+        var start = document.getElementById("start").value;
+        var end = document.getElementById("end").value;
+        var vat = document.getElementById("vat").value;
+        if(name =="" && address == "" && start == "" && end == "" && vat == "") {
+            return;
+        }
+        if (start < 0) {
+            document.getElementById("erro1").innerHTML =" "+"*không được nhập số nhỏ hơn 0"
+            return;
+        }
+        if (end < 0) {
+            document.getElementById("erro2").innerHTML =" "+"*không được nhập số nhỏ hơn 0"
+            return;
+        }
+        if (vat < 0) {
+            document.getElementById("erro3").innerHTML =" "+"*không được nhập số nhỏ hơn 0"
+            return;
+        }
+        if (end < start) {
+            document.getElementById("erro2").innerHTML =" "+"*số bạn nhập không hợp lệ"
+            return;
+        }
+
+        var dien_tt = end - start;
+            var cap_1;
+            var cap_2;
+            var cap_3;
+                if(dien_tt < 50) {
+                    cap_1 = dien_tt;
+                    cap_2 = 0;
+                    cap_3 = 0;
+                }else if (dien_tt < 100 && dien_tt < 50) {
+                    cap_1 = 50;
+                    cap_2 = dien_tt - cap_1;
+                    cap_3 = 0;
+                }else {
+                    cap_1 = 50;
+                    cap_2 = 50;
+                    cap_3 = dien_tt - 100;
+                }
+            var tien_cap1 = cap_1 * 1388;
+            var tien_cap2 = cap_2 * 1433;
+            var tien_cap3 = cap_3 * 1660;
+            var tong = (tien_cap1 + tien_cap2 + tien_cap3);
+        var dataUser = {
+            index : 0,
+            name : name,
+            address : address,
+            start : start,
+            end : end,
+            vat : vat,
+            total: "Thành tiền:"+ " " + tong
+        }
+        arrCal.push(dataUser);
+        listTable();
+        localStorage.setItem("ObjCal", JSON.stringify(arrCal));
+    })
+    //event clear trên form:
+    genderEvent("click", "#btnClear", function() {
+        document.getElementById("name").value = "";
+        document.getElementById("address").value = "";
+        document.getElementById("start").value = "";
+        document.getElementById("end").value = "";
+        document.getElementById("vat").value = "";
+    })
+
+    //event edit 
+    function editElement(index) {
+        arrCal = localStorage.getItem("ObjCal") ? JSON.parse(localStorage.getItem("ObjCal")) : [];
+        var name = document.getElementById("name").value = arrCal[index].name;
+        var address = document.getElementById("address").value = arrCal[index].address;
+        var start = document.getElementById("start").value = arrCal[index].start;
+        var end = document.getElementById("end").value = arrCal[index].end;
+        var vat = document.getElementById("vat").value= arrCal[index].vat;
+        document.getElementById("index").value = index;
+
+        document.getElementById("btnCalculate").style.display = "none";
+        document.getElementById("btnClear").style.display = "none"
+        document.getElementById("btnUpdate").style.display = "inline-block";
+        document.getElementById("btnCancel").style.display = "inline-block";
+
+
+    }
+
+    function loadUpdate() {
+        arrCal = localStorage.getItem("ObjCal") ? JSON.parse(localStorage.getItem("ObjCal")) : [];
+        var index = document.getElementById("index").value;
+
+        arrCal[index]= {
+            index : 0,
+            name : document.getElementById("name").value,
+            address : document.getElementById("address").value,
+            start : document.getElementById("start").value,
+            end : document.getElementById("end").value,
+            vat : document.getElementById("vat").value
+           
+        }
+        localStorage.setItem("ObjCal", JSON.stringify(arrCal));
+        listTable()
+    }
+
+    function Cancel() {
+        //sau khi update xong thì nhấn cancel để trở lại fome add ban đầu
+        document.getElementById("btnCalculate").style.display = "inline-block";
+        document.getElementById("btnClear").style.display = "inline-block"
+        document.getElementById("btnUpdate").style.display = "none";
+        document.getElementById("btnCancel").style.display = "none";
+
+        //và đưa gái trị của form về trống để add:
+        document.getElementById("name").value = "";
+        document.getElementById("address").value = "";
+        document.getElementById("start").value = "";
+        document.getElementById("end").value = "";
+        document.getElementById("vat").value = "";
+    }
+
+    function deleteElement(index) {
+        var dele = confirm("Bạn có đồng ý xóa không??")
+        if (dele) {
+            arrCal = localStorage.getItem("ObjCal") ? JSON.parse(localStorage.getItem("ObjCal")) : [];
+            arrCal.splice(index,1)
+            localStorage.setItem("ObjCal", JSON.stringify(arrCal));
+            listTable()
+        }
+
+    }
+
+  
+</script>
+</html>
